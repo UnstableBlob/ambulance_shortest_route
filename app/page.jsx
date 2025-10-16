@@ -421,10 +421,30 @@ export default function Home() {
               algorithm={algorithm}
             />
 
-            <GraphTheoryAnalysis
+            <div 
+              className="shadow-lg rounded-lg border-b-2 border-indigo-500 p-4 cursor-pointer hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all"
+              onClick={() => { 
+                // Save current graph data to localStorage for the analysis page
+                localStorage.setItem('graphAnalysisNodes', JSON.stringify(nodes));
+                localStorage.setItem('graphAnalysisEdges', JSON.stringify(edges));
+                window.location.href = '/graph-analysis';
+              }}
+            >
+              <h2 className="text-2xl font-bold text-gray-800">
+                📐 Graph Theory Analysis
+              </h2>
+              <p className="text-sm text-gray-600 mt-1">
+                Mathematical analysis of Eulerian and Hamiltonian properties
+              </p>
+              <p className="text-xs text-indigo-600 mt-2">
+                Click to view detailed analysis →
+              </p>
+            </div>
+
+            {/* <GraphTheoryAnalysis
               nodes={nodes}
               edges={edges}
-            />
+            /> */}
           </div>
         </div>
       </main>

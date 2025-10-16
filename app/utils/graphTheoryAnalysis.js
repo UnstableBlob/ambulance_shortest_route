@@ -138,25 +138,127 @@ export function analyzeEulerian(nodes, edges) {
   
   const oddDegreeCount = oddDegreeVertices.length;
   
-  // Apply Euler's theorem
+  // Apply Euler's theorem with DETAILED step-by-step solving
   let hasEulerianCircuit = false;
   let hasEulerianPath = false;
   let explanation = "";
   let mathematicalReasoning = "";
+  let solvingSteps = [];
   
+  // Step 1: Check connectivity
+  solvingSteps.push({
+    step: 1,
+    title: "Check Graph Connectivity",
+    description: `Used Depth-First Search (DFS) to verify connectivity`,
+    result: connectivity.connected 
+      ? `✓ Graph is CONNECTED (${connectivity.components} component)` 
+      : `✗ Graph is DISCONNECTED (${connectivity.components} components)`,
+    passed: connectivity.connected
+  });
+  
+  // Step 2: Calculate vertex degrees
+  const degreeList = Object.entries(degrees).map(([id, deg]) => `${id}:${deg}`).join(', ');
+  solvingSteps.push({
+    step: 2,
+    title: "Calculate Vertex Degrees",
+    description: "Counted edges incident to each vertex",
+    result: `Degrees: {${degreeList}}`,
+    details: `Total vertices: ${nodes.length}, Total edges: ${activeEdges.length}`
+  });
+  
+  // Step 3: Identify odd-degree vertices
+  solvingSteps.push({
+    step: 3,
+    title: "Identify Odd-Degree Vertices",
+    description: "Found vertices where degree is an odd number",
+    result: oddDegreeCount === 0 
+      ? "✓ No odd-degree vertices (all even)" 
+      : oddDegreeCount === 2
+      ? `Found exactly 2 odd-degree vertices: ${oddDegreeVertices.join(', ')}`
+      : `Found ${oddDegreeCount} odd-degree vertices: ${oddDegreeVertices.join(', ')}`,
+    passed: oddDegreeCount === 0 || oddDegreeCount === 2
+  });
+  
+  // Step 4: Apply Euler's Theorem
   if (!connectivity.connected) {
+    solvingSteps.push({
+      step: 4,
+      title: "Apply Euler's Theorem",
+      description: "Graph must be connected for Eulerian properties",
+      result: "✗ FAILED - Graph is disconnected",
+      conclusion: "No Eulerian path or circuit can exist"
+    });
+    
     explanation = `Graph is not connected (${connectivity.components} components). Eulerian paths/circuits require connectivity.`;
     mathematicalReasoning = "Theorem: An Eulerian path or circuit can only exist in a connected graph, as it must traverse all edges, which is impossible across disconnected components.";
   } else if (oddDegreeCount === 0) {
     hasEulerianCircuit = true;
     hasEulerianPath = true;
+    
+    solvingSteps.push({
+      step: 4,
+      title: "Apply Euler's Theorem (Circuit)",
+      description: "Connected graph + all even degrees ⟹ Eulerian Circuit",
+      result: "✓ PASSED - All vertices have even degree",
+      conclusion: "Eulerian Circuit EXISTS"
+    });
+    
+    solvingSteps.push({
+      step: 5,
+      title: "Check for Eulerian Path",
+      description: "An Eulerian Circuit is also an Eulerian Path",
+      result: "✓ Eulerian Path also EXISTS",
+      conclusion: "Can start at any vertex and traverse all edges exactly once, returning to start"
+    });
+    
     explanation = "Graph has an Eulerian Circuit (and therefore an Eulerian Path). All vertices have even degree.";
     mathematicalReasoning = "Euler's Theorem (1736): A connected graph has an Eulerian circuit if and only if every vertex has even degree. Since we can start and end at any vertex, an Eulerian circuit is also an Eulerian path.";
   } else if (oddDegreeCount === 2) {
     hasEulerianPath = true;
-    explanation = `Graph has an Eulerian Path but NOT an Eulerian Circuit. Exactly 2 vertices (${oddDegreeVertices.join(', ')}) have odd degree.`;
+    
+    solvingSteps.push({
+      step: 4,
+      title: "Apply Euler's Theorem (Path)",
+      description: "Connected graph + exactly 2 odd-degree vertices ⟹ Eulerian Path",
+      result: `✓ PASSED - Exactly 2 odd-degree vertices found`,
+      conclusion: "Eulerian Path EXISTS"
+    });
+    
+    solvingSteps.push({
+      step: 5,
+      title: "Check for Eulerian Circuit",
+      description: "Circuit requires all even degrees",
+      result: "✗ FAILED - Two vertices have odd degree",
+      conclusion: "No Eulerian Circuit (start ≠ end)"
+    });
+    
+    solvingSteps.push({
+      step: 6,
+      title: "Determine Path Endpoints",
+      description: "Path must start and end at odd-degree vertices",
+      result: `Start: ${oddDegreeVertices[0]}, End: ${oddDegreeVertices[1]}`,
+      conclusion: "Path direction is determined by these two vertices"
+    });
+    
+    explanation = `Graph has an Eulerian Path but NOT an Eulerian Circuit. Exactly 2 vertices have odd degree.`;
     mathematicalReasoning = "Theorem: A connected graph has an Eulerian path if and only if it has exactly 0 or 2 vertices of odd degree. The path must start at one odd-degree vertex and end at the other. Since the start and end vertices are different, it cannot be a circuit.";
   } else {
+    solvingSteps.push({
+      step: 4,
+      title: "Apply Euler's Theorem",
+      description: "Need exactly 0 or 2 odd-degree vertices",
+      result: `✗ FAILED - Found ${oddDegreeCount} odd-degree vertices`,
+      conclusion: "Neither Eulerian Path nor Circuit exists"
+    });
+    
+    solvingSteps.push({
+      step: 5,
+      title: "Mathematical Proof Why It Fails",
+      description: "Degree parity argument",
+      result: `Each time we traverse an edge at vertex v, we use 2 degree units (in + out)`,
+      conclusion: `With ${oddDegreeCount} odd vertices, we have ${oddDegreeCount - 2} "extra" vertices that can't be start/end points`
+    });
+    
     explanation = `Graph has neither Eulerian Path nor Circuit. ${oddDegreeCount} vertices have odd degree (need 0 or 2).`;
     mathematicalReasoning = `Mathematical Proof: A path entering a vertex must also leave it (except for start/end vertices). This requires even degree for all intermediate vertices. With ${oddDegreeCount} odd-degree vertices, we cannot construct an Eulerian path.`;
   }
@@ -171,6 +273,7 @@ export function analyzeEulerian(nodes, edges) {
     components: connectivity.components,
     explanation,
     mathematicalReasoning,
+    solvingSteps,  // NEW: Detailed solving steps
     startEndVertices: oddDegreeCount === 2 ? {
       start: oddDegreeVertices[0],
       end: oddDegreeVertices[1]
@@ -254,8 +357,19 @@ export function analyzeHamiltonian(nodes, edges) {
   const connectivity = isGraphConnected(nodes, activeEdges);
   const degrees = calculateDegrees(nodes, activeEdges);
   
+  // Initialize solving steps
+  let solvingSteps = [];
+  
   // If not connected, definitely no Hamiltonian path/circuit
   if (!connectivity.connected) {
+    solvingSteps.push({
+      step: 1,
+      title: "Check Graph Connectivity",
+      description: "Used Depth-First Search (DFS) to verify connectivity",
+      result: `✗ Graph is DISCONNECTED (${connectivity.components} components)`,
+      conclusion: "Hamiltonian path impossible - cannot visit all vertices"
+    });
+    
     return {
       hasHamiltonianCircuit: false,
       hasHamiltonianPath: false,
@@ -264,15 +378,58 @@ export function analyzeHamiltonian(nodes, edges) {
       mathematicalReasoning: "Theorem: A Hamiltonian path must visit all vertices, which is impossible in a disconnected graph as there is no path between vertices in different components.",
       theoremApplied: "Connectivity requirement",
       degrees,
+      solvingSteps,
       samplePath: null
     };
   }
+  
+  // Step 1: Check connectivity (passed)
+  solvingSteps.push({
+    step: 1,
+    title: "Check Graph Connectivity",
+    description: "Used Depth-First Search (DFS) to verify connectivity",
+    result: `✓ Graph is CONNECTED`,
+    conclusion: "Graph is connected - Hamiltonian path may be possible"
+  });
+  
+  // Step 2: Calculate degrees
+  const degreeList = Object.entries(degrees).map(([id, deg]) => `${id}:${deg}`).join(', ');
+  solvingSteps.push({
+    step: 2,
+    title: "Calculate Vertex Degrees",
+    description: "Counted edges incident to each vertex",
+    result: `Degrees: {${degreeList}}`,
+    details: `n = ${n} vertices, min(deg) = ${Math.min(...Object.values(degrees))}, max(deg) = ${Math.max(...Object.values(degrees))}`
+  });
   
   // Check Dirac's Theorem (sufficient condition for Hamiltonian circuit)
   const minDegree = Math.min(...Object.values(degrees));
   const diracCondition = minDegree >= n / 2;
   
+  solvingSteps.push({
+    step: 3,
+    title: "Check Dirac's Theorem (1952)",
+    description: `Sufficient condition: n ≥ 3 AND deg(v) ≥ n/2 for ALL vertices`,
+    calculation: `n = ${n}, n/2 = ${n/2}, min(deg) = ${minDegree}`,
+    result: diracCondition && n >= 3
+      ? `✓ SATISFIED - min(deg) = ${minDegree} ≥ ${n/2}` 
+      : n < 3
+      ? `⚠ Not applicable (n < 3)`
+      : `✗ NOT SATISFIED - min(deg) = ${minDegree} < ${n/2}`,
+    conclusion: diracCondition && n >= 3
+      ? "Hamiltonian Circuit GUARANTEED to exist"
+      : "Cannot conclude from Dirac's theorem"
+  });
+  
   if (diracCondition && n >= 3) {
+    solvingSteps.push({
+      step: 4,
+      title: "Final Conclusion",
+      description: "Dirac's sufficient condition met",
+      result: "✓ Hamiltonian Circuit EXISTS",
+      proof: "By Dirac's Theorem, a connected graph with n≥3 where all vertices have degree ≥n/2 must contain a Hamiltonian circuit"
+    });
+    
     return {
       hasHamiltonianCircuit: true,
       hasHamiltonianPath: true,
@@ -282,6 +439,7 @@ export function analyzeHamiltonian(nodes, edges) {
       theoremApplied: "Dirac's Theorem",
       degrees,
       minDegree,
+      solvingSteps,
       samplePath: "Guaranteed to exist (construction not computed)"
     };
   }
@@ -289,6 +447,7 @@ export function analyzeHamiltonian(nodes, edges) {
   // Check Ore's Theorem (another sufficient condition)
   let oreConditionSatisfied = true;
   const nodeIds = nodes.map(n => n.id);
+  let oreViolation = null;
   
   for (let i = 0; i < nodeIds.length; i++) {
     for (let j = i + 1; j < nodeIds.length; j++) {
@@ -300,6 +459,7 @@ export function analyzeHamiltonian(nodes, edges) {
         const degreeSum = degrees[u] + degrees[v];
         if (degreeSum < n) {
           oreConditionSatisfied = false;
+          oreViolation = { u, v, degreeSum };
           break;
         }
       }
@@ -307,7 +467,32 @@ export function analyzeHamiltonian(nodes, edges) {
     if (!oreConditionSatisfied) break;
   }
   
+  solvingSteps.push({
+    step: 4,
+    title: "Check Ore's Theorem (1960)",
+    description: `Sufficient condition: n ≥ 3 AND deg(u) + deg(v) ≥ n for ALL non-adjacent vertex pairs`,
+    calculation: oreConditionSatisfied 
+      ? `All non-adjacent pairs satisfy deg(u) + deg(v) ≥ ${n}`
+      : `Counter-example: vertices ${oreViolation.u} and ${oreViolation.v} are non-adjacent with deg sum = ${oreViolation.degreeSum} < ${n}`,
+    result: oreConditionSatisfied && n >= 3
+      ? `✓ SATISFIED - All non-adjacent pairs meet the condition`
+      : n < 3
+      ? `⚠ Not applicable (n < 3)`
+      : `✗ NOT SATISFIED`,
+    conclusion: oreConditionSatisfied && n >= 3
+      ? "Hamiltonian Circuit GUARANTEED to exist"
+      : "Cannot conclude from Ore's theorem"
+  });
+  
   if (oreConditionSatisfied && n >= 3) {
+    solvingSteps.push({
+      step: 5,
+      title: "Final Conclusion",
+      description: "Ore's sufficient condition met",
+      result: "✓ Hamiltonian Circuit EXISTS",
+      proof: "By Ore's Theorem, a connected graph with n≥3 where every pair of non-adjacent vertices has degree sum ≥n must contain a Hamiltonian circuit"
+    });
+    
     return {
       hasHamiltonianCircuit: true,
       hasHamiltonianPath: true,
@@ -316,14 +501,37 @@ export function analyzeHamiltonian(nodes, edges) {
       mathematicalReasoning: `Ore's Theorem (1960): If G is a simple connected graph with n ≥ 3 vertices, and for every pair of non-adjacent vertices u and v, deg(u) + deg(v) ≥ n, then G has a Hamiltonian circuit.`,
       theoremApplied: "Ore's Theorem",
       degrees,
+      solvingSteps,
       samplePath: "Guaranteed to exist (construction not computed)"
     };
   }
   
   // For small graphs (n ≤ 8), use backtracking to find actual Hamiltonian path
   if (n <= 8) {
+    solvingSteps.push({
+      step: 5,
+      title: "Attempt Exhaustive Backtracking Search",
+      description: `Graph is small (${n} ≤ 8 vertices), so we can try all possible paths`,
+      calculation: `Maximum paths to check: ${n}! = ${factorial(n)}`,
+      result: "Running backtracking algorithm..."
+    });
+    
     const hamiltonianPath = findHamiltonianPath(nodes, graph);
     const hamiltonianCircuit = findHamiltonianCircuit(nodes, graph);
+    
+    solvingSteps.push({
+      step: 6,
+      title: "Backtracking Search Results",
+      description: "Exhaustive search completed",
+      result: hamiltonianCircuit
+        ? "✓ Hamiltonian CIRCUIT found"
+        : hamiltonianPath
+        ? "✓ Hamiltonian PATH found (no circuit)"
+        : "✗ NO Hamiltonian path or circuit found",
+      conclusion: hamiltonianCircuit || hamiltonianPath
+        ? "Definitive answer: Hamiltonian structure exists"
+        : "Definitive answer: No Hamiltonian structure exists"
+    });
     
     return {
       hasHamiltonianCircuit: hamiltonianCircuit !== null,
@@ -341,11 +549,29 @@ export function analyzeHamiltonian(nodes, edges) {
         : "Exhaustive backtracking search of all possible paths found no Hamiltonian path. Since the search is complete for this graph size, we can definitively say no Hamiltonian path exists.",
       theoremApplied: "Backtracking Algorithm (Exhaustive Search)",
       degrees,
+      solvingSteps,
       samplePath: hamiltonianCircuit || hamiltonianPath
     };
   }
   
   // For larger graphs, provide heuristic analysis
+  solvingSteps.push({
+    step: 5,
+    title: "Graph Size Analysis",
+    description: `Graph has ${n} vertices (> 8)`,
+    calculation: `Exhaustive search would require checking up to ${n}! paths`,
+    result: "✗ Too large for exhaustive search",
+    conclusion: "Computational infeasibility due to NP-completeness"
+  });
+  
+  solvingSteps.push({
+    step: 6,
+    title: "NP-Completeness Limitation",
+    description: "Hamiltonian path problem is NP-complete (Karp, 1972)",
+    result: "⚠ UNKNOWN - Cannot determine definitively",
+    conclusion: "No known efficient algorithm exists. Result cannot be determined without exponential-time search."
+  });
+  
   return {
     hasHamiltonianCircuit: "unknown",
     hasHamiltonianPath: "unknown",
@@ -355,8 +581,19 @@ export function analyzeHamiltonian(nodes, edges) {
     theoremApplied: "NP-completeness",
     degrees,
     minDegree,
+    solvingSteps,
     suggestion: "Try reducing graph size (≤8 vertices) for definite answer, or add more edges to satisfy Dirac's condition (all degrees ≥ n/2)"
   };
+}
+
+// Helper function to calculate factorial for display
+function factorial(n) {
+  if (n <= 1) return 1;
+  let result = 1;
+  for (let i = 2; i <= n; i++) {
+    result *= i;
+  }
+  return result.toLocaleString();
 }
 
 /**

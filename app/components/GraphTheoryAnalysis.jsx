@@ -202,6 +202,59 @@ export default function GraphTheoryAnalysis({ nodes, edges }) {
             </p>
           </div>
 
+          {/* NEW: Step-by-Step Solving Process */}
+          {eulerianAnalysis.solvingSteps && eulerianAnalysis.solvingSteps.length > 0 && (
+            <div className="bg-gradient-to-r from-cyan-50 to-blue-50 border-2 border-cyan-400 rounded-lg p-4">
+              <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <span className="text-xl">🔍</span>
+                Step-by-Step Solution Process
+              </h4>
+              <div className="space-y-3">
+                {eulerianAnalysis.solvingSteps.map((step, index) => (
+                  <div 
+                    key={index} 
+                    className={`bg-white rounded-lg p-3 border-l-4 ${
+                      step.passed === true 
+                        ? 'border-green-500' 
+                        : step.passed === false 
+                        ? 'border-red-500' 
+                        : 'border-blue-500'
+                    }`}
+                  >
+                    <div className="flex items-start gap-2">
+                      <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                        {step.step}
+                      </span>
+                      <div className="flex-1">
+                        <h5 className="font-bold text-gray-800 text-sm mb-1">
+                          {step.title}
+                        </h5>
+                        <p className="text-xs text-gray-600 mb-2">
+                          {step.description}
+                        </p>
+                        <div className="bg-gray-50 rounded p-2">
+                          <p className="text-sm font-medium text-gray-800">
+                            <span className="text-gray-600">Result:</span> {step.result}
+                          </p>
+                          {step.details && (
+                            <p className="text-xs text-gray-600 mt-1">
+                              {step.details}
+                            </p>
+                          )}
+                          {step.conclusion && (
+                            <p className="text-xs text-blue-700 mt-1 font-medium">
+                              → {step.conclusion}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Odd Degree Vertices */}
           {eulerianAnalysis.oddDegreeCount > 0 && (
             <div className="bg-orange-50 border border-orange-300 p-4 rounded">
@@ -362,6 +415,71 @@ export default function GraphTheoryAnalysis({ nodes, edges }) {
               {hamiltonianAnalysis.mathematicalReasoning}
             </p>
           </div>
+
+          {/* NEW: Step-by-Step Solving Process */}
+          {hamiltonianAnalysis.solvingSteps && hamiltonianAnalysis.solvingSteps.length > 0 && (
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-400 rounded-lg p-4">
+              <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <span className="text-xl">🔍</span>
+                Step-by-Step Solution Process
+              </h4>
+              <div className="space-y-3">
+                {hamiltonianAnalysis.solvingSteps.map((step, index) => (
+                  <div 
+                    key={index} 
+                    className={`bg-white rounded-lg p-3 border-l-4 ${
+                      step.result?.includes('✓') 
+                        ? 'border-green-500' 
+                        : step.result?.includes('✗') 
+                        ? 'border-red-500' 
+                        : 'border-purple-500'
+                    }`}
+                  >
+                    <div className="flex items-start gap-2">
+                      <span className="bg-purple-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                        {step.step}
+                      </span>
+                      <div className="flex-1">
+                        <h5 className="font-bold text-gray-800 text-sm mb-1">
+                          {step.title}
+                        </h5>
+                        <p className="text-xs text-gray-600 mb-2">
+                          {step.description}
+                        </p>
+                        {step.calculation && (
+                          <div className="bg-yellow-50 rounded p-2 mb-2 border border-yellow-200">
+                            <p className="text-xs font-mono text-gray-700">
+                              <span className="font-bold text-gray-800">Calculation:</span> {step.calculation}
+                            </p>
+                          </div>
+                        )}
+                        <div className="bg-gray-50 rounded p-2">
+                          <p className="text-sm font-medium text-gray-800">
+                            <span className="text-gray-600">Result:</span> {step.result}
+                          </p>
+                          {step.details && (
+                            <p className="text-xs text-gray-600 mt-1">
+                              {step.details}
+                            </p>
+                          )}
+                          {step.conclusion && (
+                            <p className="text-xs text-purple-700 mt-1 font-medium">
+                              → {step.conclusion}
+                            </p>
+                          )}
+                          {step.proof && (
+                            <p className="text-xs text-indigo-700 mt-1 italic bg-indigo-50 p-2 rounded">
+                              <strong>Proof:</strong> {step.proof}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Minimum Degree Info */}
           {hamiltonianAnalysis.minDegree !== undefined && (
