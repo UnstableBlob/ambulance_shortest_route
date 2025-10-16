@@ -83,7 +83,7 @@ export default function GraphTheoryAnalysis({ nodes, edges }) {
             <span className="text-xl">🔢</span>
             Vertex Degrees
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+          <div className="text-black grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
             {Object.entries(eulerianAnalysis.degrees).map(([nodeId, degree]) => (
               <div 
                 key={nodeId}
@@ -110,7 +110,7 @@ export default function GraphTheoryAnalysis({ nodes, edges }) {
       )}
 
       {/* Eulerian Analysis */}
-      <div className="border-2 border-blue-300 rounded-lg overflow-hidden">
+      <div className="border-2 border-blue-300 rounded-lg overflow-hidden text-black">
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4">
           <h3 className="text-xl font-bold text-white flex items-center gap-2">
             <span className="text-2xl">🔄</span>
@@ -224,7 +224,7 @@ export default function GraphTheoryAnalysis({ nodes, edges }) {
       </div>
 
       {/* Hamiltonian Analysis */}
-      <div className="border-2 border-purple-300 rounded-lg overflow-hidden">
+      <div className="border-2 border-purple-300 rounded-lg overflow-hidden text-black">
         <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-4">
           <h3 className="text-xl font-bold text-white flex items-center gap-2">
             <span className="text-2xl">🔁</span>

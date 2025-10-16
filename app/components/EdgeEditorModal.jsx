@@ -70,7 +70,7 @@ export default function EdgeEditorModal({ isOpen, edge, onClose, onSave }) {
             step="0.1"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="text-black w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Enter weight..."
           />
           <p className="text-xs text-gray-500 mt-1">
