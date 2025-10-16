@@ -25,6 +25,27 @@ A production-quality React/Next.js application for interactive graph visualizati
 - **Responsive Design**: Works on desktop and tablet devices
 - **Comprehensive Legend**: Visual guide for understanding node and edge types
 
+### 📐 Graph Theory Analysis (NEW)
+- **Eulerian Path/Circuit Detection**: 
+  - Applies Euler's Theorem (1736) to determine existence
+  - Analyzes vertex degrees (odd vs. even)
+  - Verifies graph connectivity
+  - Provides mathematical proofs and explanations
+  
+- **Hamiltonian Path/Circuit Analysis**:
+  - Implements Dirac's Theorem (1952) for sufficient conditions
+  - Applies Ore's Theorem (1960) for alternative sufficient conditions
+  - Exact path finding via backtracking DFS (for graphs ≤8 vertices)
+  - Handles NP-completeness for larger graphs with proper explanations
+  - Displays sample paths when found
+  
+- **Academic Rigor**:
+  - Proper theorem citations with publication years
+  - Mathematical proofs and explanations
+  - Degree analysis with visual highlighting
+  - Educational comparisons between Eulerian and Hamiltonian properties
+  - Connectivity analysis and graph statistics
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -112,11 +133,13 @@ http://localhost:3000
   │   ├── RouteDetails.jsx          # Path result display
   │   ├── EdgeEditorModal.jsx       # Edge property editor
   │   ├── AlgorithmSelector.jsx     # Algorithm selection UI
-  │   └── Legend.jsx                # Visual legend component
+  │   ├── Legend.jsx                # Visual legend component
+  │   └── GraphTheoryAnalysis.jsx   # Eulerian/Hamiltonian analysis
   │
   └── utils/
       ├── dijkstra.js               # Dijkstra's algorithm implementation
-      └── bellmanFord.js            # Bellman-Ford algorithm implementation
+      ├── bellmanFord.js            # Bellman-Ford algorithm implementation
+      └── graphTheoryAnalysis.js    # Graph theory utilities
 ```
 
 ## 🧮 Algorithm Details
@@ -134,6 +157,34 @@ http://localhost:3000
 - **Space Complexity**: O(V)
 - **Advantages**: Handles negative weights, detects negative cycles
 - **Limitations**: Slower than Dijkstra for large graphs
+
+### Graph Theory Analysis
+
+#### Eulerian Paths and Circuits
+**Theorem (Euler, 1736)**: A connected graph has:
+- **Eulerian Circuit** (closed path visiting every edge exactly once) iff all vertices have even degree
+- **Eulerian Path** (open path visiting every edge exactly once) iff exactly 0 or 2 vertices have odd degree
+
+**Implementation**:
+- Degree calculation: O(E)
+- Connectivity check: DFS traversal, O(V + E)
+- Automatic verification with mathematical proof display
+
+#### Hamiltonian Paths and Circuits
+**Theorem (Dirac, 1952)**: If a graph G has n ≥ 3 vertices and every vertex has degree ≥ n/2, then G has a Hamiltonian circuit.
+
+**Theorem (Ore, 1960)**: If for every pair of non-adjacent vertices u and v, deg(u) + deg(v) ≥ n, then G has a Hamiltonian circuit.
+
+**Implementation**:
+- Sufficient condition checking: O(V²)
+- Exact path finding (backtracking DFS): O(V!) for graphs with ≤8 vertices
+- NP-completeness handling: Proper academic explanation for larger graphs
+- Sample path display when solutions exist
+
+**Complexity Notes**:
+- Hamiltonian path problem is NP-complete (Karp, 1972)
+- Exact solutions only feasible for small graphs
+- Heuristic approaches needed for larger instances
 
 ## 🎨 Component Architecture
 

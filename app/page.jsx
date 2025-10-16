@@ -8,6 +8,7 @@ import RouteDetails from './components/RouteDetails';
 import EdgeEditorModal from './components/EdgeEditorModal';
 import AlgorithmSelector from './components/AlgorithmSelector';
 import Legend from './components/Legend';
+import GraphTheoryAnalysis from './components/GraphTheoryAnalysis';
 import { dijkstra, hasNegativeWeights } from './utils/dijkstra';
 import { bellmanFord } from './utils/bellmanFord';
 
@@ -418,6 +419,11 @@ export default function Home() {
               routeResult={routeResult}
               nodes={nodes}
               algorithm={algorithm}
+            />
+
+            <GraphTheoryAnalysis
+              nodes={nodes}
+              edges={edges}
             />
           </div>
         </div>
