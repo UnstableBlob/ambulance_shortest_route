@@ -78,12 +78,12 @@ export default function Home() {
   // Initialize sample graph for demo
   const initializeSampleGraph = () => {
     const sampleNodes = [
-      { id: 'A', label: 'Node A', type: 'normal' },
+      { id: 'A', label: 'Node A', type: 'ambulance' },
       { id: 'B', label: 'Node B', type: 'normal' },
       { id: 'C', label: 'Node C', type: 'normal' },
       { id: 'D', label: 'Node D', type: 'normal' },
       { id: 'E', label: 'Node E', type: 'normal' },
-      { id: 'F', label: 'Node F', type: 'normal' },
+      { id: 'F', label: 'Node F', type: 'hospital' },
     ];
 
     const sampleEdges = [
@@ -375,6 +375,7 @@ export default function Home() {
           <div className="space-y-6">
             <ControlPanel
               nodes={nodes}
+              edges={edges}
               onAddNode={handleAddNode}
               onAddEdge={handleAddEdge}
               onDeleteNode={handleDeleteNode}
@@ -420,8 +421,8 @@ export default function Home() {
               nodes={nodes}
               algorithm={algorithm}
             />
-
-            <div 
+            {/*graph */}
+            {/* <div 
               className="shadow-lg rounded-lg border-b-2 border-indigo-500 p-4 cursor-pointer hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all"
               onClick={() => { 
                 // Save current graph data to localStorage for the analysis page
@@ -439,12 +440,9 @@ export default function Home() {
               <p className="text-xs text-indigo-600 mt-2">
                 Click to view detailed analysis →
               </p>
-            </div>
+            </div> */}
 
-            {/* <GraphTheoryAnalysis
-              nodes={nodes}
-              edges={edges}
-            /> */}
+
           </div>
         </div>
       </main>

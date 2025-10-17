@@ -5,6 +5,7 @@
  * Provides UI controls for graph manipulation and configuration
  * 
  * @param {Array} nodes - Array of all nodes
+ * @param {Array} edges - Array of all edges
  * @param {Function} onAddNode - Handler for adding a node
  * @param {Function} onAddEdge - Handler for adding an edge
  * @param {Function} onDeleteNode - Handler for deleting selected node
@@ -20,6 +21,7 @@
  */
 export default function ControlPanel({
   nodes,
+  edges,
   onAddNode,
   onAddEdge,
   onDeleteNode,
@@ -33,6 +35,33 @@ export default function ControlPanel({
   algorithm,
   hasNegativeWeights
 }) {
+  // Build adjacency matrix
+  const buildAdjacencyMatrix = () => {
+    if (nodes.length === 0) return null;
+    
+    const matrix = {};
+    
+    // Initialize matrix with 0s
+    nodes.forEach(node1 => {
+      matrix[node1.id] = {};
+      nodes.forEach(node2 => {
+        matrix[node1.id][node2.id] = node1.id === node2.id ? 0 : '∞';
+      });
+    });
+    
+    // Fill in edge weights
+    edges.forEach(edge => {
+      if (!edge.blocked) {
+        matrix[edge.from][edge.to] = edge.weight;
+        matrix[edge.to][edge.from] = edge.weight; // Undirected graph
+      }
+    });
+    
+    return matrix;
+  };
+
+  const adjacencyMatrix = buildAdjacencyMatrix();
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
       <h2 className="text-2xl font-bold text-gray-800 border-b pb-2">
@@ -169,6 +198,77 @@ export default function ControlPanel({
           <li>Negative weights = tolls (use Bellman-Ford)</li>
         </ul>
       </div>
+
+      {/* Adjacency Matrix */}
+      {adjacencyMatrix && nodes.length > 0 && (
+        <div className="space-y-3 text-black">
+          <h3 className="text-lg font-semibold text-gray-700">📊 Adjacency Matrix</h3>
+          
+          <div className="bg-white p-4 rounded-lg border border-gray-200 overflow-x-auto">
+            <div className="inline-block min-w-full">
+              <table className="border-collapse text-xs">
+                <thead>
+                  <tr>
+                    <th className="border border-gray-300 bg-gray-100 px-2 py-1 font-semibold text-gray-700">
+                      {/* Empty corner cell */}
+                    </th>
+                    {nodes.map(node => (
+                      <th 
+                        key={node.id}
+                        className="border border-gray-300 bg-gray-100 px-2 py-1 font-semibold text-gray-700 min-w-[40px]"
+                        title={node.label}
+                      >
+                        {node.label}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {nodes.map(rowNode => (
+                    <tr key={rowNode.id}>
+                      <td className="border border-gray-300 bg-gray-100 px-2 py-1 font-semibold text-gray-700">
+                        {rowNode.label}
+                      </td>
+                      {nodes.map(colNode => {
+                        const value = adjacencyMatrix[rowNode.id][colNode.id];
+                        const isInfinity = value === '∞';
+                        const isSelf = rowNode.id === colNode.id;
+                        
+                        return (
+                          <td 
+                            key={colNode.id}
+                            className={`border border-gray-300 px-2 py-1 text-center ${
+                              isSelf ? 'bg-gray-200' :
+                              isInfinity ? 'bg-gray-50 text-gray-400' :
+                              'bg-green-50 text-green-700 font-semibold'
+                            }`}
+                            title={
+                              isSelf ? 'Same node' :
+                              isInfinity ? 'No direct edge' :
+                              `Weight: ${value}`
+                            }
+                          >
+                            {value}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            
+            <div className="mt-3 text-xs text-gray-600">
+              <p><strong>Legend:</strong></p>
+              <ul className="list-disc list-inside space-y-1">
+                <li><span className="font-semibold text-green-700">Numbers</span> = Edge weights (distance/time)</li>
+                <li><span className="text-gray-400">∞</span> = No direct connection</li>
+                <li><span className="bg-gray-200 px-1">Diagonal</span> = Same node (always 0)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
